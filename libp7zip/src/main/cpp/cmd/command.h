@@ -16,6 +16,8 @@ main(
 
 int executeCommand(const char *cmd);
 
+jstring executeCommandList(JNIEnv *env, const char *cmd);
+
 #ifdef __cplusplus
 }
 #endif

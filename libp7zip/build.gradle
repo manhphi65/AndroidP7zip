@@ -17,6 +17,7 @@ android {
     }
     buildTypes {
         debug {
+            debuggable true
             externalNativeBuild {
                 cmake {
                     // log switch

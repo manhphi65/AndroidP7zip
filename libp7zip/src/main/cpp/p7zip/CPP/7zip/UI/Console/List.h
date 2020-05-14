@@ -6,6 +6,7 @@
 #include "../../../Common/Wildcard.h"
 
 #include "../Common/LoadCodecs.h"
+#include "ResultObject.h"
 
 HRESULT ListArchives(CCodecs *codecs,
     const CObjectVector<COpenType> &types,
@@ -22,6 +23,7 @@ HRESULT ListArchives(CCodecs *codecs,
     const CObjectVector<CProperty> *props,
     #endif
     UInt64 &errors,
-    UInt64 &numWarnings);
+    UInt64 &numWarnings,
+    ResultObject *resultObject);
 
 #endif
