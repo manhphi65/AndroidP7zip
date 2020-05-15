@@ -1,36 +1,15 @@
 #ifndef ANDROIDUN7ZIP_NDKHELPER_H
 #define ANDROIDUN7ZIP_NDKHELPER_H
 
+#include <string>
+#include <__locale>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <jni.h>
-#include <android/log.h>
 #include <7zip/MyVersion.h>
-
-#ifdef NATIVE_LOG
-#define LOG_TAG "TOH_NATIVE_LOG"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
-#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE,LOG_TAG,__VA_ARGS__)
-#define LOGF(...) __android_log_print(ANDROID_LOG_FATAL,LOG_TAG,__VA_ARGS__)
-#define LOGTAGD(X,...) __android_log_print(ANDROID_LOG_DEBUG,X,__VA_ARGS__)
-#define LOGTAGI(X,...) __android_log_print(ANDROID_LOG_INFO,X,__VA_ARGS__)
-#define LOGTAGW(X,...) __android_log_print(ANDROID_LOG_WARN,X,__VA_ARGS__)
-#define LOGTAGE(X,...) __android_log_print(ANDROID_LOG_ERROR,X,__VA_ARGS__)
-#define LOGTAGV(X,...) __android_log_print(ANDROID_LOG_VERBOSE,X,__VA_ARGS__)
-#define LOGTAGF(X,...) __android_log_print(ANDROID_LOG_FATAL,X,__VA_ARGS__)
-
-#else
-#define LOGD(...) do{}while(0)
-#define LOGI(...) do{}while(0)
-#define LOGW(...) do{}while(0)
-#define LOGE(...) do{}while(0)
-#define LOGF(...) do{}while(0)
-#endif
 
 #define JNI_FUNC(X) Java_com_hzy_libp7zip_P7ZipApi_##X
 

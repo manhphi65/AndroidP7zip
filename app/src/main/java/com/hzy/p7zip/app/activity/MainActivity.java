@@ -80,20 +80,15 @@ public class MainActivity extends AppCompatActivity
         String pathForList = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
                 + File.separatorChar + fileNameForList;
         Log.d(TAG, "Check file :" + fileNameForList);
-        try {
-            /*String listCommand1 = "7z l '" + pathForList + "'";
-            String resultList1 = new String(P7ZipApi.executeCommandList(listCommand1), "UTF-32");
-            String listCommand2 = "7z l '-p2' '" + pathForList + "'";
-            String resultList2 = new String(P7ZipApi.executeCommandList(listCommand2), "UTF-32");*/
-            String listCommand3 = "7z l '-p1' '" + pathForList + "'";
-            String resultList3 = P7ZipApi.executeCommandList(listCommand3);
-            /*Log.d(TAG, "Command line : " + listCommand1 + "\nResult : " + resultList1);
-            Log.d(TAG, "Command line : " + listCommand2 + "\nResult : " + resultList2);*/
-            Log.d(TAG, "Command line : " + listCommand3 + "\nResult : " + resultList3);
-        } catch (Exception e) {
-
-        }
-
+        String listCommand1 = "7z l '" + pathForList + "'";
+        String resultList1 = P7ZipApi.executeCommandList(listCommand1);
+        String listCommand2 = "7z l '-p2' '" + pathForList + "'";
+        String resultList2 = P7ZipApi.executeCommandList(listCommand2);
+        String listCommand3 = "7z l '-p1' '" + pathForList + "'";
+        String resultList3 = P7ZipApi.executeCommandList(listCommand3);
+        Log.d(TAG, "Command line : " + listCommand1 + "\nResult : " + resultList1);
+        Log.d(TAG, "Command line : " + listCommand2 + "\nResult : " + resultList2);
+        Log.d(TAG, "Command line : " + listCommand3 + "\nResult : " + resultList3);
     }
 
     private void initToolbar() {

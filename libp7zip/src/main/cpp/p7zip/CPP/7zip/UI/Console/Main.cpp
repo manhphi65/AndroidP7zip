@@ -64,8 +64,12 @@
 
 #include "../../MyVersion.h"
 #include <p7zip/CPP/Common/ResultObject.h>
+#include <random>
 
 #endif
+
+#include <DebugLog.h>
+TAG_FILE
 
 using namespace NWindows;
 using namespace NFile;
@@ -895,11 +899,10 @@ int Main2(
                 CStdOutStream *so = g_StdStream;
 
                 bool isError = false;
-                LOGTAGI(TAG,
-                        "NumTryArcs:%d\nNumCantOpenArcs:%d\nNumArcsWithError:%d\nNumOpenArcErrors:%d",
+                LOGI("NumTryArcs:%d\nNumCantOpenArcs:%d\nNumArcsWithError:%d\nNumOpenArcErrors:%d",
                         ecs->NumTryArcs, ecs->NumCantOpenArcs, ecs->NumArcsWithError,
                         ecs->NumOpenArcErrors);
-                LOGTAGI(TAG, "hresultMain = %d", hresultMain);
+                LOGI("hresultMain = %d", hresultMain);
                 if (so) {
                     *so << endl;
 
@@ -1011,9 +1014,10 @@ int Main2(
                     if (options.EnableHeaders)
                         g_StdOut << endl << "Errors: " << numErrors << endl;
                     retCode = NExitCode::kFatalError;
+                    resultObject->setResultCode(retCode);
                 }
 
-                LOGTAGD(TAG, "ListArchive, hresultMain = %d", hresultMain);
+                LOGD("ListArchive, hresultMain = %d, retCode = %d", hresultMain, retCode);
             }
     } else if (options.Command.IsFromUpdateGroup()) {
         CUpdateOptions &uo = options.UpdateOptions;

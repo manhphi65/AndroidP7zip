@@ -19,9 +19,9 @@ class ResultObject {
 public:
     ResultObject();
 
-    ResultObject(int code);
+    void setResultCode(int code);
 
-    void addItem(UString item);
+    void addItem(UString entryPath, bool isDirectory, UInt64 size);
 
     void clear();
 

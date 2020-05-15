@@ -16,6 +16,8 @@
 #include "SetProperties.h"
 #include "ndkhelper.h"
 #define TAG "TOH_Extract.cpp"
+#include <DebugLog.h>
+TAG_FILE
 
 using namespace NWindows;
 using namespace NFile;
@@ -332,8 +334,8 @@ HRESULT Extract(
 
         HRESULT result = arcLink.Open3(op, openCallback);
 
-        LOGTAGI(TAG,"result Open3 : %d", result);
-        LOGTAGI(TAG, "ask password ? %s", arcLink.PasswordWasAsked ? "true" : "false");
+        LOGI("result Open3 : %d", result);
+        LOGI( "ask password ? %s", arcLink.PasswordWasAsked ? "true" : "false");
         if (arcLink.PasswordWasAsked && result != S_OK) result = S_CRYPTO;
 
         if (result == E_ABORT || result == S_CRYPTO)

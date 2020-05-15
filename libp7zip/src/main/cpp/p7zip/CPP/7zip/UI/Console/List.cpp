@@ -23,9 +23,8 @@
 #include "List.h"
 #include "OpenCallbackConsole.h"
 
-#include "ndkhelper.h"
-
-#define TAG "TOH_List.cpp"
+#include <DebugLog.h>
+TAG_FILE
 
 using namespace NWindows;
 using namespace NCOM;
@@ -940,7 +939,11 @@ HRESULT ListArchives(CCodecs *codecs,
 
         HRESULT result = arcLink.Open3(options, &openCallback);
 
-        LOGTAGD(TAG, "Can Open ? %s", arcLink.IsOpen ? "true" : "false");
+        LOGD("--------------------------------------------------------------------------------");
+        LOGD("Result of open : %d", result);
+        LOGD("Can Open ? %s", arcLink.IsOpen ? "true" : "false");
+        LOGD("Request password file : %s", arcLink.PasswordWasAsked ? "true" : "false");
+        resultObject->setResultCode(result);
 
         if (result != S_OK) {
             if (result == E_ABORT)
@@ -958,13 +961,17 @@ HRESULT ListArchives(CCodecs *codecs,
                     *g_ErrStream << NError::MyFormatMessage(result);
             }
             *g_ErrStream << endl;
+            LOGD("Debug here");
             numErrors++;
             continue;
         }
 
         {
-            if (arcLink.NonOpen_ErrorInfo.ErrorFormatIndex >= 0)
+            if (arcLink.NonOpen_ErrorInfo.ErrorFormatIndex >= 0) {
+                LOGD("Error in %d", __LINE__);
                 numErrors++;
+                if (arcLink.PasswordWasAsked) lastError = S_CRYPTO;
+            }
 
             FOR_VECTOR (r, arcLink.Arcs) {
                 const CArcErrorInfo &arc = arcLink.Arcs[r].ErrorInfo;
@@ -975,11 +982,14 @@ HRESULT ListArchives(CCodecs *codecs,
                 if (arc.ErrorFormatIndex >= 0)
                     numWarnings++;
                 if (arc.AreThereErrors()) {
+                    LOGD("Error in %d", __LINE__);
                     numErrors++;
                     // break;
                 }
-                if (!arc.ErrorMessage.IsEmpty())
+                if (!arc.ErrorMessage.IsEmpty()) {
+                    LOGD("Error in %d", __LINE__);
                     numErrors++;
+                }
             }
         }
 
@@ -1029,7 +1039,7 @@ HRESULT ListArchives(CCodecs *codecs,
         UInt32 numItems;
         RINOK(archive->GetNumberOfItems(&numItems));
 
-        LOGTAGD(TAG, "Total entries : %d", numItems);
+        LOGD("Total entries : %d", numItems);
 
         CReadArcItem item;
         UStringVector pathParts;
@@ -1064,18 +1074,18 @@ HRESULT ListArchives(CCodecs *codecs,
                 if (isAltStream) {
                     RINOK(arc.GetItem(i, item));
                     if (!CensorNode_CheckPath(wildcardCensor, item)) {
-                        LOGTAGD(TAG, "Break in 1072");
+                        LOGD("Break in %d", __LINE__);
                         continue;
                     }
                 } else {
                     SplitPathToParts(fp.FilePath, pathParts);;
                     bool include;
                     if (!wildcardCensor.CheckPathVect(pathParts, !fp.IsDir, include)) {
-                        LOGTAGD(TAG, "Break in 1079");
+                        LOGD("Break in %d", __LINE__);
                         continue;
                     }
                     if (!include) {
-                        LOGTAGD(TAG, "Break in 1083");
+                        LOGD("Break in %d", __LINE__);
                         continue;
                     }
                 }
@@ -1094,15 +1104,12 @@ HRESULT ListArchives(CCodecs *codecs,
             stat2.GetStat(isAltStream).Update(st);
 
             if (isAltStream && !showAltStreams) {
-                LOGTAGD(TAG, "Break in 1102");
+                LOGD("Break in 1107");
                 continue;
             }
 
             //Add detail to param return to JNI.
-            UString itemDetail =
-                    (L"{\"") + fp.FilePath + L"\"," + (fp.IsDir ? L"true" : L"false") + L"," +
-                    std::to_wstring(st.Size.Val).data() + L"}";
-            resultObject->addItem(itemDetail);
+            resultObject->addItem(fp.FilePath, fp.IsDir, st.Size.Val);
 
             RINOK(fp.PrintItemInfo(i, st));
         }
@@ -1151,6 +1158,7 @@ HRESULT ListArchives(CCodecs *codecs,
         PrintPropNameAndNumber(g_StdOut, "Total archives size", totalArcSizes);
     }
 
+    LOGD("numErrors = %llu, lastError = %d", numErrors, lastError);
     if (numErrors == 1 && lastError != 0)
         return lastError;
 

@@ -5,13 +5,15 @@
 #include "ResultObject.h"
 #include <p7zip/CPP/7zip/UI/Common/ExitCode.h>
 
-#define TAG "TOH_ResultObject.h"
+#include <DebugLog.h>
+TAG_FILE
 
 ResultObject::ResultObject() {
     resultCode = NExitCode::kSuccess;
+    resultData = UStringVector();
 }
 
-ResultObject::ResultObject(int code) {
+void ResultObject::setResultCode(int code) {
     resultCode = code;
 }
 
@@ -19,21 +21,30 @@ void ResultObject::clear() {
     resultData.Clear();
 }
 
-void ResultObject::addItem(UString item) {
-    resultData.Add(item);
+void ResultObject::addItem(UString entryPath, bool isDirectory, UInt64 size) {
+    UString itemDetail =
+            (L"{\"path\":\"") + entryPath + L"\",\"isDirectory\":" + (isDirectory ? L"true" : L"false") + L",\"size\":" +
+            std::to_wstring(size).data() + L"}";
+    resultData.Add(itemDetail);
 }
 
 jstring ResultObject::convertResult(JNIEnv *env) {
-    LOGTAGD(TAG, "Total item : %d", resultData.Size());
-    UString result(L"[");
-    for (int i = 0; i < resultData.Size() - 1; ++i) {
-        result += resultData[i];
-        result += L",";
+    LOGD("Total item : %d", resultData.Size());
+    UString resultList;
+    if (resultData.Size() > 0) {
+        resultList += L"[";
+        for (int i = 0; i < resultData.Size() - 1; i++) {
+            resultList += resultData[i];
+            resultList += L",";
+        }
+        if (resultData.Size() > 0) resultList += resultData[resultData.Size() - 1];
+        resultList += L"]";
+    } else {
+        resultList = L"[]";
     }
-    if (resultData.Size() > 0) result += resultData[resultData.Size()-1];
-    result += L"]";
-    LOGTAGD(TAG, "Result convert json : %ls", result.Ptr());
-    return fromWStr(env, const_cast<wchar_t *>(result.Ptr()));
+    UString resultJson = UString(L"{\"exitCode\":") + std::to_wstring(resultCode).data() + L",\"data\":" + resultList + L"}";
+    LOGD("Result convert json : %ls", resultJson.Ptr());
+    return fromWStr(env, const_cast<wchar_t *>(resultJson.Ptr()));
 }
 
 jstring ResultObject::fromWStr(JNIEnv *env, wchar_t *result) {

@@ -45,24 +45,17 @@ static void PrintError(const char *message) {
 
 #define NT_CHECK_FAIL_ACTION *g_StdStream << "Unsupported Windows version"; return NExitCode::kFatalError;
 
-int MY_CDECL main
-        (
-#ifndef _WIN32
-        int numArgs, char *args[]
-#endif
-) {
+void initStdStream() {
     g_ErrStream = &g_StdErr;
     g_StdStream = &g_StdOut;
+}
 
-    NT_CHECK
-
-    NConsoleClose::CCtrlHandlerSetter ctrlHandlerSetter;
+int runCommand(int numArgs, char *args[], ResultObject *resultObject) {
     int ret;
-    ResultObject resultObject;
     try {
         ret = Main2(
 #ifndef _WIN32
-                numArgs, args, &resultObject
+                numArgs, args, resultObject
 #endif
         );
     }
@@ -141,5 +134,29 @@ int MY_CDECL main
         return (NExitCode::kFatalError);
     }
 
+    return ret;
+}
+
+int MY_CDECL main
+        (
+#ifndef _WIN32
+        int numArgs, char *args[]
+#endif
+) {
+    initStdStream();
+
+    NT_CHECK
+    NConsoleClose::CCtrlHandlerSetter ctrlHandlerSetter;
+    ResultObject resultObject;
+
+    return runCommand(numArgs, args, &resultObject);
+}
+
+int MY_CDECL main2(int numArgs, char *args[], ResultObject *resultObject){
+    initStdStream();
+    NT_CHECK
+    NConsoleClose::CCtrlHandlerSetter ctrlHandlerSetter;
+    int ret = runCommand(numArgs, args, resultObject);
+    resultObject->setResultCode(ret);
     return ret;
 }
