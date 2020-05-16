@@ -56,10 +56,11 @@ public class MainActivity extends AppCompatActivity
 
         /* -------------------- start Test File -------------------- */
         String fileNameforTest =
-                "ChinhLaAnh.7z.001"; //Device Redmi 5 của Phương.
+                //"ChinhLaAnh.7z.001"; //Device Redmi 5 của Phương.
                 //"file7z_pass1.7z";
                 //"password23.zip";
                 //"bigcat.7z";
+                "split_rar_pass1.part1.rar";
             //"split_zip_pass1.zip.001";
 
         String pathForTest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
