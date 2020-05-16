@@ -1,6 +1,5 @@
 #include <ndkhelper.h>
 #include <DebugLog.h>
-TAG_FILE
 #include <cmd/command.h>
 #include <wchar.h>
 #define TAG "TOH_p7zip.cpp"

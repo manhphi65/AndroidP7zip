@@ -21,6 +21,8 @@ public:
 
     void setResultCode(int code);
 
+    int getResultCode();
+
     void addItem(UString entryPath, bool isDirectory, UInt64 size);
 
     void clear();

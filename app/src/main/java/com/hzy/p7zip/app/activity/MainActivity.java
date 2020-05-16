@@ -54,10 +54,13 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         showFragment(StorageFragment.class);
 
-        /*String fileNameforTest =
+        /* -------------------- start Test File -------------------- */
+        String fileNameforTest =
+                "ChinhLaAnh.7z.001"; //Device Redmi 5 của Phương.
+                //"file7z_pass1.7z";
                 //"password23.zip";
-                "bigcat.7z";
-        //"split_zip_pass1.zip.001";
+                //"bigcat.7z";
+            //"split_zip_pass1.zip.001";
 
         String pathForTest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
                 + File.separatorChar + fileNameforTest;
@@ -70,13 +73,15 @@ public class MainActivity extends AppCompatActivity
         int resultCode3 = P7ZipApi.executeCommand(testCommand3);
         Log.d(TAG, "Command line : " + testCommand1 + "\nResult : " + resultCode1);
         Log.d(TAG, "Command line : " + testCommand2 + "\nResult : " + resultCode2);
-        Log.d(TAG, "Command line : " + testCommand3 + "\nResult : " + resultCode3);*/
+        Log.d(TAG, "Command line : " + testCommand3 + "\nResult : " + resultCode3);
+        /* -------------------- end Test File -------------------- */
 
-        String fileNameForList =
-                //"password23.zip";
+        /*String fileNameForList =
+                //"password23.zip"; //Failed file.
                 //"bigcat.7z";
+                "TestArchives.rar";
                 //"split_zip_pass1.zip.001";
-                "split_7z_pass1.7z.001";
+                //"split_7z_pass1.7z.001";
         String pathForList = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
                 + File.separatorChar + fileNameForList;
         Log.d(TAG, "Check file :" + fileNameForList);
@@ -88,7 +93,18 @@ public class MainActivity extends AppCompatActivity
         String resultList3 = P7ZipApi.executeCommandList(listCommand3);
         Log.d(TAG, "Command line : " + listCommand1 + "\nResult : " + resultList1);
         Log.d(TAG, "Command line : " + listCommand2 + "\nResult : " + resultList2);
-        Log.d(TAG, "Command line : " + listCommand3 + "\nResult : " + resultList3);
+        Log.d(TAG, "Command line : " + listCommand3 + "\nResult : " + resultList3);*/
+
+        /*String fileNameForList = "test.tar.gz";
+        String pathForList = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+                + File.separatorChar + fileNameForList;
+        Log.d(TAG, "Check file :" + fileNameForList);
+        String listCommand1X = "7z x -tgzip -so '" + pathForList + "'";
+        String listCommand1L = "7z l -ttar -si";
+        //String listCommand1 = "7z l -tgzip '" + pathForList + "'";
+        int resultList1X = P7ZipApi.executeCommand(listCommand1X);
+        String resultList1L = P7ZipApi.executeCommandList(listCommand1L);
+        Log.d(TAG, "Command line : " + listCommand1L + "\nResult : " + resultList1L);*/
     }
 
     private void initToolbar() {

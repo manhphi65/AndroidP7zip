@@ -24,7 +24,6 @@
 #include "OpenCallbackConsole.h"
 
 #include <DebugLog.h>
-TAG_FILE
 
 using namespace NWindows;
 using namespace NCOM;
@@ -943,7 +942,6 @@ HRESULT ListArchives(CCodecs *codecs,
         LOGD("Result of open : %d", result);
         LOGD("Can Open ? %s", arcLink.IsOpen ? "true" : "false");
         LOGD("Request password file : %s", arcLink.PasswordWasAsked ? "true" : "false");
-        resultObject->setResultCode(result);
 
         if (result != S_OK) {
             if (result == E_ABORT)
@@ -952,6 +950,8 @@ HRESULT ListArchives(CCodecs *codecs,
             *g_ErrStream << endl << kError << arcPath << " : ";
             if (result == S_FALSE) {
                 Print_OpenArchive_Error(*g_ErrStream, codecs, arcLink);
+                if (arcLink.PasswordWasAsked)
+                    lastError = S_CRYPTO;
             } else {
                 lastError = result;
                 *g_ErrStream << "opening : ";

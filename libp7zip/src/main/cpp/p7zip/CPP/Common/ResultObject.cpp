@@ -6,7 +6,6 @@
 #include <p7zip/CPP/7zip/UI/Common/ExitCode.h>
 
 #include <DebugLog.h>
-TAG_FILE
 
 ResultObject::ResultObject() {
     resultCode = NExitCode::kSuccess;
@@ -17,13 +16,18 @@ void ResultObject::setResultCode(int code) {
     resultCode = code;
 }
 
+int ResultObject::getResultCode() {
+    return resultCode;
+}
+
 void ResultObject::clear() {
     resultData.Clear();
 }
 
 void ResultObject::addItem(UString entryPath, bool isDirectory, UInt64 size) {
     UString itemDetail =
-            (L"{\"path\":\"") + entryPath + L"\",\"isDirectory\":" + (isDirectory ? L"true" : L"false") + L",\"size\":" +
+            (L"{\"path\":\"") + entryPath + L"\",\"isDirectory\":" +
+            (isDirectory ? L"true" : L"false") + L",\"size\":" +
             std::to_wstring(size).data() + L"}";
     resultData.Add(itemDetail);
 }
@@ -42,7 +46,9 @@ jstring ResultObject::convertResult(JNIEnv *env) {
     } else {
         resultList = L"[]";
     }
-    UString resultJson = UString(L"{\"exitCode\":") + std::to_wstring(resultCode).data() + L",\"data\":" + resultList + L"}";
+    UString resultJson =
+            UString(L"{\"exitCode\":") + std::to_wstring(resultCode).data() + L",\"data\":" +
+            resultList + L"}";
     LOGD("Result convert json : %ls", resultJson.Ptr());
     return fromWStr(env, const_cast<wchar_t *>(resultJson.Ptr()));
 }

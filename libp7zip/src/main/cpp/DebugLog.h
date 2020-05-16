@@ -21,8 +21,6 @@ static const char *getTag(const char *file, int line) {
     return mTag.data();
 }
 
-#define TAG_FILE extern const char *getTag(const char *file, int line);
-
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,getTag(__FILE__,__LINE__),__VA_ARGS__)
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,getTag(__FILE__,__LINE__),__VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,getTag(__FILE__,__LINE__),__VA_ARGS__)

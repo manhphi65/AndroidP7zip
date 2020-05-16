@@ -15,9 +15,7 @@
 #include "Extract.h"
 #include "SetProperties.h"
 #include "ndkhelper.h"
-#define TAG "TOH_Extract.cpp"
 #include <DebugLog.h>
-TAG_FILE
 
 using namespace NWindows;
 using namespace NFile;
@@ -335,16 +333,20 @@ HRESULT Extract(
         HRESULT result = arcLink.Open3(op, openCallback);
 
         LOGI("result Open3 : %d", result);
-        LOGI( "ask password ? %s", arcLink.PasswordWasAsked ? "true" : "false");
+        LOGI("ask password ? %s", arcLink.PasswordWasAsked ? "true" : "false");
         if (arcLink.PasswordWasAsked && result != S_OK) result = S_CRYPTO;
 
-        if (result == E_ABORT || result == S_CRYPTO)
+        if (result == E_ABORT || result == S_CRYPTO) {
+            LOGD("HRESULT code : %d" + result);
             return result;
+        }
 
-        if (result == S_OK && arcLink.NonOpen_ErrorInfo.ErrorFormatIndex >= 0)
-            result = S_FALSE;
+        if (result == S_OK && arcLink.NonOpen_ErrorInfo.ErrorFormatIndex >= 0) {
+            result = arcLink.PasswordWasAsked ? S_CRYPTO : S_FALSE;
+        }
 
         // arcLink.Set_ErrorsText();
+        LOGD("Call here!");
         RINOK(extractCallback->OpenResult(codecs, arcLink, arcPath, result));
 
         if (result != S_OK) {
@@ -355,6 +357,7 @@ HRESULT Extract(
                     if (!fi2.IsDir())
                         totalPackProcessed += fi2.Size;
             }
+            if (result==S_CRYPTO) return result;
             continue;
         }
 
@@ -380,6 +383,7 @@ HRESULT Extract(
                     if (newPackSize < 0)
                         newPackSize = 0;
                     totalPackSize = newPackSize;
+                    LOGD("Call here!");
                     RINOK(extractCallback->SetTotal(totalPackSize));
                 }
             }
@@ -411,6 +415,7 @@ HRESULT Extract(
         false;
 #endif
 
+        LOGD("Call here!");
         RINOK(DecompressArchive(
                 codecs,
                 arcLink,
@@ -441,5 +446,6 @@ HRESULT Extract(
     st.AltStreams_UnpackSize = ecs->AltStreams_UnpackSize;
     st.NumArchives = arcPaths.Size();
     st.PackSize = ecs->LocalProgressSpec->InSize;
+    LOGD("Call here!");
     return S_OK;
 }

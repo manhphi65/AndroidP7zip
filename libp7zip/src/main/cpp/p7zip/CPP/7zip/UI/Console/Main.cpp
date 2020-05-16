@@ -69,7 +69,6 @@
 #endif
 
 #include <DebugLog.h>
-TAG_FILE
 
 using namespace NWindows;
 using namespace NFile;
@@ -900,8 +899,8 @@ int Main2(
 
                 bool isError = false;
                 LOGI("NumTryArcs:%d\nNumCantOpenArcs:%d\nNumArcsWithError:%d\nNumOpenArcErrors:%d",
-                        ecs->NumTryArcs, ecs->NumCantOpenArcs, ecs->NumArcsWithError,
-                        ecs->NumOpenArcErrors);
+                     ecs->NumTryArcs, ecs->NumCantOpenArcs, ecs->NumArcsWithError,
+                     ecs->NumOpenArcErrors);
                 LOGI("hresultMain = %d", hresultMain);
                 if (so) {
                     *so << endl;
@@ -947,7 +946,7 @@ int Main2(
                 if (isError && hresultMain != S_CRYPTO)
                     retCode = NExitCode::kFatalError;
 
-                if (hresultMain == S_CRYPTO) {
+                if (isError && hresultMain == S_CRYPTO) {
                     LOGI("file crypto!!!!");
                     retCode = NExitCode::kLockedArchive;
                     return retCode;
@@ -1013,11 +1012,16 @@ int Main2(
                 if (numErrors > 0) {
                     if (options.EnableHeaders)
                         g_StdOut << endl << "Errors: " << numErrors << endl;
-                    retCode = NExitCode::kFatalError;
-                    resultObject->setResultCode(retCode);
+                    if (hresultMain == S_CRYPTO) {
+                        retCode = NExitCode::kLockedArchive;
+                    } else {
+                        retCode = NExitCode::kFatalError;
+                    }
+                } else {
+                    retCode = NExitCode::kSuccess;
                 }
-
                 LOGD("ListArchive, hresultMain = %d, retCode = %d", hresultMain, retCode);
+                return retCode;
             }
     } else if (options.Command.IsFromUpdateGroup()) {
         CUpdateOptions &uo = options.UpdateOptions;
@@ -1108,7 +1112,7 @@ int Main2(
             se = g_ErrStream;
         retCode = WarningsCheck(hresultMain, callback, errorInfo, g_StdStream, se,
                                 options.EnableHeaders);
-        LOGI("kHash retCode = %d", retCode);
+        LOGD("kHash retCode = %d", retCode);
     } else
         ShowMessageAndThrowException(kUserErrorMessage, NExitCode::kUserError);
 
@@ -1117,6 +1121,6 @@ int Main2(
 
     ThrowException_if_Error(hresultMain);
 
-    LOGI("return code = %d", retCode);
+    LOGD("return code = %d", retCode);
     return retCode;
 }

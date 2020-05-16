@@ -2,7 +2,6 @@
 #include "ndkhelper.h"
 #include "str2args.h"
 #include "DebugLog.h"
-TAG_FILE
 /**
  * get args from string
  */

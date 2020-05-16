@@ -86,6 +86,10 @@ int runCommand(int numArgs, char *args[], ResultObject *resultObject) {
             PrintError("System ERROR:");
             *g_ErrStream << NError::MyFormatMessage(systemError.ErrorCode) << endl;
         }
+        //Hiện tại thì gặp mật khẩu ngắt luôn chứ không đợi Callback nhập mật khẩu được.
+        if (systemError.ErrorCode == S_CRYPTO) {
+            return NExitCode::kLockedArchive;
+        }
         return (NExitCode::kFatalError);
     }
     catch (NExitCode::EEnum &exitCode) {
