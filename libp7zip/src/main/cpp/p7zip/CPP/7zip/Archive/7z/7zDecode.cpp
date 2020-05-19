@@ -1,5 +1,5 @@
 // 7zDecode.cpp
-
+#include <DebugLog.h>
 #include "StdAfx.h"
 
 #include "../../Common/LimitedStreams.h"
@@ -390,6 +390,7 @@ HRESULT CDecoder::Decode(
       decoder->QueryInterface(IID_ICryptoSetPassword, (void **)&cryptoSetPassword);
       if (cryptoSetPassword)
       {
+        LOGD("isEncrypted!");
         isEncrypted = true;
         if (!getTextPassword)
           return E_NOTIMPL;

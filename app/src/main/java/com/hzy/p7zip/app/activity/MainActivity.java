@@ -60,8 +60,9 @@ public class MainActivity extends AppCompatActivity
                 //"file7z_pass1.7z";
                 //"password23.zip";
                 //"bigcat.7z";
-                "split_rar_pass1.part1.rar";
-            //"split_zip_pass1.zip.001";
+                //"split_rar_pass1.part1.rar";
+                //"split_zip_pass1.zip.001";
+                "split_7z_onlydata_pass1.7z.001";
 
         String pathForTest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
                 + File.separatorChar + fileNameforTest;

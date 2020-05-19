@@ -1,10 +1,6 @@
 #ifndef ANDROIDUN7ZIP_DEBUGLOG_H
 #define ANDROIDUN7ZIP_DEBUGLOG_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <string>
 #include <__locale>
 #include <cstddef>
@@ -34,10 +30,6 @@ static const char *getTag(const char *file, int line) {
 #define LOGW(...) do{}while(0)
 #define LOGE(...) do{}while(0)
 #define LOGF(...) do{}while(0)
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif
