@@ -56,13 +56,14 @@ public class MainActivity extends AppCompatActivity
 
         /* -------------------- start Test File -------------------- */
         String fileNameforTest =
-                //"ChinhLaAnh.7z.001"; //Device Redmi 5 của Phương.
+                //"text.7z.001"
+                //"split_7z_pass1.7z.001";
                 //"file7z_pass1.7z";
-                //"password23.zip";
+                //"password23.zip"; // failed file.
                 //"bigcat.7z";
-                //"split_rar_pass1.part1.rar";
+                "split_rar_pass1.part1.rar";
                 //"split_zip_pass1.zip.001";
-                "split_7z_onlydata_pass1.7z.001";
+                //"split_7z_onlydata_pass1.7z.001";
 
         String pathForTest = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separatorChar+ "TestArchives"
@@ -71,12 +72,12 @@ public class MainActivity extends AppCompatActivity
         String testCommand1 = "7z t '" + pathForTest + "'";
         int resultCode1 = P7ZipApi.executeCommand(testCommand1);
         Log.d(TAG, "Command line : " + testCommand1 + "\nResult : " + resultCode1);
-        /*String testCommand2 = "7z t '-p2' '" + pathForTest + "'";
+        String testCommand2 = "7z t '-p2' '" + pathForTest + "'";
         int resultCode2 = P7ZipApi.executeCommand(testCommand2);
         Log.d(TAG, "Command line : " + testCommand2 + "\nResult : " + resultCode2);
         String testCommand3 = "7z t '-p1' '" + pathForTest + "'";
         int resultCode3 = P7ZipApi.executeCommand(testCommand3);
-        Log.d(TAG, "Command line : " + testCommand3 + "\nResult : " + resultCode3);*/
+        Log.d(TAG, "Command line : " + testCommand3 + "\nResult : " + resultCode3);
         /* -------------------- end Test File -------------------- */
 
         /*String fileNameForList =

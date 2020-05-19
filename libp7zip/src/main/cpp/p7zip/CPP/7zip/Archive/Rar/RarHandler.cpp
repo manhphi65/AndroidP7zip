@@ -1,5 +1,6 @@
 // RarHandler.cpp
 
+#include <DebugLog.h>
 #include "StdAfx.h"
 
 #include "../../../../C/CpuArch.h"
@@ -1715,7 +1716,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     }
     
     HRESULT result = commonCoder->Code(inStream, outStream, &packSize, &outSize, progress);
-    
+    LOGD("Call here - %d", result);
     if (item.IsEncrypted())
       filterStreamSpec->ReleaseInStream();
     
@@ -1738,7 +1739,9 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     }
     RINOK(extractCallback->SetOperationResult(opRes));
   }
-  
+
+  //LOGD("Call here - %d", result);
+    LOGD("Call here - %d", S_OK);
   return S_OK;
   COM_TRY_END
 }

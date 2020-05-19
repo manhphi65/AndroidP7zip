@@ -1,5 +1,6 @@
 // 7zExtract.cpp
 
+#include <DebugLog.h>
 #include "StdAfx.h"
 
 #include "../../../../C/7zCrc.h"
@@ -386,8 +387,10 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
         continue;
       }
       
-      if (result != S_OK)
-        return result;
+      if (result != S_OK) {
+          LOGD("result : %d", result );
+          return result;
+      }
 
       RINOK(folderOutStream->FlushCorrupted(NExtract::NOperationResult::kDataError));
       continue;

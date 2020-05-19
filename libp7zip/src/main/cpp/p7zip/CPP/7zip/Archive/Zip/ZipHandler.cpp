@@ -1,5 +1,6 @@
 // ZipHandler.cpp
 
+#include <DebugLog.h>
 #include "StdAfx.h"
 
 #include "../../../Common/ComTry.h"
@@ -266,7 +267,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
   NWindows::NCOM::CPropVariant prop;
   const CItemEx &item = m_Items[index];
   const CExtraBlock &extra = item.GetMainExtra();
-  
+
   switch (propID)
   {
     case kpidPath:
@@ -277,11 +278,11 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       prop = res;
       break;
     }
-    
+
     case kpidIsDir:  prop = item.IsDir(); break;
     case kpidSize:  prop = item.Size; break;
     case kpidPackSize:  prop = item.PackSize; break;
-    
+
     case kpidTimeType:
     {
       FILETIME ft;
@@ -296,7 +297,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       prop = type;
       break;
     }
-    
+
     case kpidCTime:
     {
       FILETIME ft;
@@ -304,7 +305,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
         prop = ft;
       break;
     }
-    
+
     case kpidATime:
     {
       FILETIME ft;
@@ -312,7 +313,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
         prop = ft;
       break;
     }
-    
+
     case kpidMTime:
     {
       FILETIME utc;
@@ -336,9 +337,9 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
         prop = utc;
       break;
     }
-    
+
     case kpidAttrib:  prop = item.GetWinAttrib(); break;
-    
+
     case kpidPosixAttrib:
     {
       UInt32 attrib;
@@ -346,9 +347,9 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
         prop = attrib;
       break;
     }
-    
+
     case kpidEncrypted:  prop = item.IsEncrypted(); break;
-    
+
     case kpidComment:
     {
       if (item.Comment.Size() != 0)
@@ -359,14 +360,14 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       }
       break;
     }
-    
+
     case kpidCRC:  if (item.IsThereCrc()) prop = item.Crc; break;
-    
+
     case kpidMethod:
     {
       unsigned id = item.Method;
       AString m;
-      
+
       if (item.IsEncrypted())
       {
         if (id == NFileHeader::NCompressionMethod::kWzAES)
@@ -409,7 +410,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
           m += kMethod_ZipCrypto;
         m += ' ';
       }
-      
+
       {
         char temp[16];
         const char *s = NULL;
@@ -428,7 +429,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
         if (id == NFileHeader::NCompressionMethod::kLZMA && item.IsLzmaEOS())
           m += ":EOS";
       }
-      
+
       prop = m;
       break;
     }
@@ -448,7 +449,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       prop = s;
       break;
     }
-    
+
     case kpidUnpackVer:
       prop = (UInt32)item.ExtractVersion.Version;
       break;
@@ -457,7 +458,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       prop = item.Disk;
       break;
   }
-  
+
   prop.Detach(value);
   return S_OK;
   COM_TRY_END
@@ -653,12 +654,12 @@ HRESULT CZipDecoder::Decode(
       }
     }
   }
-    
+
   COutStreamWithCRC *outStreamSpec = new COutStreamWithCRC;
   CMyComPtr<ISequentialOutStream> outStream = outStreamSpec;
   outStreamSpec->SetStream(realOutStream);
   outStreamSpec->Init(needCRC);
-  
+
   CMyComPtr<ISequentialInStream> packStream;
 
   CLimitedSequentialInStream *limitedStreamSpec = new CLimitedSequentialInStream;
@@ -681,16 +682,18 @@ HRESULT CZipDecoder::Decode(
     limitedStreamSpec->SetStream(packStream);
     limitedStreamSpec->Init(packSize);
   }
-  
+
   CMyComPtr<ICompressFilter> cryptoFilter;
-  
+
   if (item.IsEncrypted())
   {
     if (wzAesMode)
     {
       CWzAesExtra aesField;
-      if (!item.GetMainExtra().GetWzAes(aesField))
+      if (!item.GetMainExtra().GetWzAes(aesField)) {
+        LOGD("Call Here!");
         return S_OK;
+      }
       id = aesField.Method;
       if (!_wzAesDecoder)
       {
@@ -701,6 +704,7 @@ HRESULT CZipDecoder::Decode(
       if (!_wzAesDecoderSpec->SetKeyMode(aesField.Strength))
       {
         res = NExtract::NOperationResult::kUnsupportedMethod;
+        LOGD("Call Here!");
         return S_OK;
       }
     }
@@ -722,16 +726,18 @@ HRESULT CZipDecoder::Decode(
       }
       cryptoFilter = _zipCryptoDecoder;
     }
-    
+
     CMyComPtr<ICryptoSetPassword> cryptoSetPassword;
+    LOGD("Call Here!");
     RINOK(cryptoFilter.QueryInterface(IID_ICryptoSetPassword, &cryptoSetPassword));
-    
+
     if (!getTextPassword)
       extractCallback->QueryInterface(IID_ICryptoGetTextPassword, (void **)&getTextPassword);
-    
+
     if (getTextPassword)
     {
       CMyComBSTR password;
+      LOGD("Call Here!");
       RINOK(getTextPassword->CryptoGetTextPassword(&password));
       AString charPassword;
       if (password)
@@ -763,15 +769,18 @@ HRESULT CZipDecoder::Decode(
       }
       HRESULT result = cryptoSetPassword->CryptoSetPassword(
         (const Byte *)(const char *)charPassword, charPassword.Len());
-      if (result != S_OK)
+      LOGD("Call Here! %d", res);
+      if (result != S_OK) {
+        if (password) return S_CRYPTO;
         return S_OK;
+      }
     }
     else
     {
       RINOK(cryptoSetPassword->CryptoSetPassword(0, 0));
     }
   }
-  
+
   unsigned m;
   for (m = 0; m < methodItems.Size(); m++)
     if (methodItems[m].ZipMethod == id)
@@ -803,16 +812,19 @@ HRESULT CZipDecoder::Decode(
         if (id > 0xFF)
         {
           res = NExtract::NOperationResult::kUnsupportedMethod;
+          LOGD("Call Here!");
           return S_OK;
         }
         szMethodID = kMethodId_ZipBase + (Byte)id;
       }
 
+      LOGD("Call Here!");
       RINOK(CreateCoder(EXTERNAL_CODECS_LOC_VARS szMethodID, false, mi.Coder));
 
       if (mi.Coder == 0)
       {
         res = NExtract::NOperationResult::kUnsupportedMethod;
+        LOGD("Call Here!");
         return S_OK;
       }
     }
@@ -820,28 +832,30 @@ HRESULT CZipDecoder::Decode(
   }
 
   ICompressCoder *coder = methodItems[m].Coder;
-  
+
   {
     CMyComPtr<ICompressSetDecoderProperties2> setDecoderProperties;
     coder->QueryInterface(IID_ICompressSetDecoderProperties2, (void **)&setDecoderProperties);
     if (setDecoderProperties)
     {
       Byte properties = (Byte)item.Flags;
+      LOGD("Call Here!");
       RINOK(setDecoderProperties->SetDecoderProperties2(&properties, 1));
     }
   }
-  
+
   #ifndef _7ZIP_ST
   {
     CMyComPtr<ICompressSetCoderMt> setCoderMt;
     coder->QueryInterface(IID_ICompressSetCoderMt, (void **)&setCoderMt);
     if (setCoderMt)
     {
+      LOGD("Call Here!");
       RINOK(setCoderMt->SetNumberOfThreads(numThreads));
     }
   }
   #endif
-  
+
   {
     HRESULT result = S_OK;
     CMyComPtr<ISequentialInStream> inStreamNew;
@@ -852,9 +866,9 @@ HRESULT CZipDecoder::Decode(
         filterStreamSpec = new CFilterCoder(false);
         filterStream = filterStreamSpec;
       }
-     
+
       filterStreamSpec->Filter = cryptoFilter;
-      
+
       if (wzAesMode)
       {
         result = _wzAesDecoderSpec->ReadHeader(inStream);
@@ -863,6 +877,7 @@ HRESULT CZipDecoder::Decode(
           if (!_wzAesDecoderSpec->Init_and_CheckPassword())
           {
             res = NExtract::NOperationResult::kWrongPassword;
+            LOGD("Call Here!");
             return S_OK;
           }
         }
@@ -877,7 +892,8 @@ HRESULT CZipDecoder::Decode(
           if (result == S_OK && !passwOK)
           {
             res = NExtract::NOperationResult::kWrongPassword;
-            return S_OK;
+            LOGD("Call Here!");
+            return S_CRYPTO;
           }
         }
       }
@@ -887,7 +903,7 @@ HRESULT CZipDecoder::Decode(
         if (result == S_OK)
         {
           _zipCryptoDecoderSpec->Init_BeforeDecode();
-          
+
           /* Info-ZIP modification to ZipCrypto format:
                if bit 3 of the general purpose bit flag is set,
                it uses high byte of 16-bit File Time.
@@ -903,7 +919,8 @@ HRESULT CZipDecoder::Decode(
           if (v1 != v2)
           {
             res = NExtract::NOperationResult::kWrongPassword;
-            return S_OK;
+            LOGD("Call Here!");
+            return S_CRYPTO;
           }
         }
       }
@@ -911,14 +928,16 @@ HRESULT CZipDecoder::Decode(
       if (result == S_OK)
       {
         inStreamReleaser.FilterCoder = filterStreamSpec;
+        LOGD("Call Here!");
         RINOK(filterStreamSpec->SetInStream(inStream));
-        
+
         /* IFilter::Init() does nothing in all zip crypto filters.
            So we can call any Initialize function in CFilterCoder. */
 
+        LOGD("Call Here!");
         RINOK(filterStreamSpec->Init_NoSubFilterInit());
         // RINOK(filterStreamSpec->SetOutStreamSize(NULL));
-      
+
         inStreamNew = filterStream;
       }
     }
@@ -927,16 +946,19 @@ HRESULT CZipDecoder::Decode(
 
     if (result == S_OK)
       result = coder->Code(inStreamNew, outStream, NULL, &item.Size, compressProgress);
-    
+
     if (result == S_FALSE)
+      LOGD("Call Here!");
       return S_OK;
-    
+
     if (result == E_NOTIMPL)
     {
       res = NExtract::NOperationResult::kUnsupportedMethod;
+      LOGD("Call Here!");
       return S_OK;
     }
 
+    LOGD("Call Here!");
     RINOK(result);
   }
 
@@ -944,7 +966,7 @@ HRESULT CZipDecoder::Decode(
   bool authOk = true;
   if (needCRC)
     crcOK = (outStreamSpec->GetCRC() == item.Crc);
-  
+
   if (wzAesMode)
   {
     const UInt64 rem = limitedStreamSpec->GetRem();
@@ -956,7 +978,7 @@ HRESULT CZipDecoder::Decode(
     if (_wzAesDecoderSpec->CheckMac(inStream, authOk) != S_OK)
       authOk = false;
   }
-  
+
   res = ((crcOK && authOk) ?
     NExtract::NOperationResult::kOK :
     NExtract::NOperationResult::kCRCError);
@@ -973,8 +995,10 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   bool allFilesMode = (numItems == (UInt32)(Int32)-1);
   if (allFilesMode)
     numItems = m_Items.Size();
-  if (numItems == 0)
+  if (numItems == 0) {
+    LOGD("Call Here!");
     return S_OK;
+  }
   UInt32 i;
   for (i = 0; i < numItems; i++)
   {
@@ -982,11 +1006,12 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     totalUnPacked += item.Size;
     totalPacked += item.PackSize;
   }
+    LOGD("Call Here!");
   RINOK(extractCallback->SetTotal(totalUnPacked));
 
   UInt64 currentTotalUnPacked = 0, currentTotalPacked = 0;
   UInt64 currentItemUnPacked, currentItemPacked;
-  
+
   CLocalProgress *lps = new CLocalProgress;
   CMyComPtr<ICompressProgressInfo> progress = lps;
   lps->Init(extractCallback, false);
@@ -1000,6 +1025,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
     lps->InSize = currentTotalPacked;
     lps->OutSize = currentTotalUnPacked;
+    LOGD("Call Here!");
     RINOK(lps->SetCur());
 
     CMyComPtr<ISequentialOutStream> realOutStream;
@@ -1017,16 +1043,19 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     currentItemUnPacked = item.Size;
     currentItemPacked = item.PackSize;
 
+    LOGD("Call Here!");
     RINOK(extractCallback->GetStream(index, &realOutStream, askMode));
 
     if (!isLocalOffsetOK)
     {
+      LOGD("Call Here!");
       RINOK(extractCallback->PrepareOperation(askMode));
       realOutStream.Release();
+      LOGD("Call Here!");
       RINOK(extractCallback->SetOperationResult(NExtract::NOperationResult::kUnavailable));
       continue;
     }
-    
+
     if (!item.FromLocal)
     {
       bool isAvail = true;
@@ -1035,8 +1064,10 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       {
         if (item.IsDir() || realOutStream || testMode)
         {
+          LOGD("Call Here!");
           RINOK(extractCallback->PrepareOperation(askMode));
           realOutStream.Release();
+          LOGD("Call Here!");
           RINOK(extractCallback->SetOperationResult(
               isAvail ?
                 NExtract::NOperationResult::kHeadersError :
@@ -1044,6 +1075,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
         }
         continue;
       }
+      LOGD("Call Here!");
       RINOK(res);
     }
 
@@ -1051,8 +1083,10 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     {
       // if (!testMode)
       {
+        LOGD("Call Here!");
         RINOK(extractCallback->PrepareOperation(askMode));
         realOutStream.Release();
+        LOGD("Call Here!");
         RINOK(extractCallback->SetOperationResult(NExtract::NOperationResult::kOK));
       }
       continue;
@@ -1072,15 +1106,18 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
         _props.NumThreads,
         #endif
         res);
+    LOGD("Call Here! %d", hres);
     RINOK(hres);
     realOutStream.Release();
-    
+
     RINOK(extractCallback->SetOperationResult(res))
   }
-  
+
   lps->InSize = currentTotalPacked;
   lps->OutSize = currentTotalUnPacked;
-  return lps->SetCur();
+  HRESULT result = lps->SetCur();
+  LOGD("Call Here! : %d", result);
+  return result;
   COM_TRY_END
 }
 

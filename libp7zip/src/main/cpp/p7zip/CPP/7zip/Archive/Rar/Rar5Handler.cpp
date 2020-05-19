@@ -1,5 +1,6 @@
 // Rar5Handler.cpp
 
+#include <DebugLog.h>
 #include "StdAfx.h"
 
 #include "../../../../C/7zCrc.h"
@@ -2661,6 +2662,8 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
     if (wrongPassword)
     {
+      result = S_CRYPTO;
+      return result;
       realOutStream.Release();
       RINOK(extractCallback->SetOperationResult(NExtract::NOperationResult::kWrongPassword));
       continue;
@@ -2695,7 +2698,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       if (linkFiles[i].NumLinks != 0)
         return E_FAIL;
   }
-
+  LOGD("Call here!");
   return S_OK;
   
   COM_TRY_END
