@@ -187,9 +187,10 @@ static HRESULT DecompressArchive(
             ConvertPropVariantToUInt64(prop, stdInProcessed);
     } else
         result = archive->Extract(&realIndices.Front(), realIndices.Size(), testMode, ecs);
-    LOGD("Result : %d", result);
     if (result == S_OK && !options.StdInMode)
         result = ecs->SetDirsTimes();
+
+    LOGD("Result : %d", result);
 
     //TODO : Trả về mã mật khẩu khi giải nén có mã mật khẩu.
     if (result==S_CRYPTO) return result;

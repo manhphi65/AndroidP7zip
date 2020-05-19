@@ -384,7 +384,7 @@ void SetExtractErrorMessage(Int32 opRes, Int32 encrypted, AString &dest) {
 
 STDMETHODIMP CExtractCallbackConsole::SetOperationResult(Int32 opRes, Int32 encrypted) {
     MT_LOCK
-
+    LOGD("opRes : %d", opRes);
     if (opRes == NArchive::NExtract::NOperationResult::kOK) {
         if (NeedPercents()) {
             _percent.Command.Empty();
@@ -651,7 +651,7 @@ HRESULT CExtractCallbackConsole::ThereAreNoFiles() {
 
 HRESULT CExtractCallbackConsole::ExtractResult(HRESULT result) {
     MT_LOCK
-
+    LOGD("Result : %d", result);
     if (NeedPercents()) {
         _percent.ClosePrint(true);
         _percent.Command.Empty();
@@ -662,6 +662,7 @@ HRESULT CExtractCallbackConsole::ExtractResult(HRESULT result) {
         _so->Flush();
 
     if (result == S_OK) {
+        LOGD("NumFileErrors_in_Current:%d, ThereIsError_in_Current:%s", NumFileErrors_in_Current, ThereIsError_in_Current);
         if (NumFileErrors_in_Current == 0 && !ThereIsError_in_Current) {
             if (ThereIsWarning_in_Current)
                 NumArcsWithWarnings++;
@@ -670,6 +671,7 @@ HRESULT CExtractCallbackConsole::ExtractResult(HRESULT result) {
             if (_so)
                 *_so << kEverythingIsOk << endl;
         } else {
+            LOGD("Call here!");
             NumArcsWithError++;
             if (_so) {
                 *_so << endl;
