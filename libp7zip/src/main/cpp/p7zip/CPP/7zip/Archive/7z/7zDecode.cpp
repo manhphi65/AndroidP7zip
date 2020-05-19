@@ -394,6 +394,7 @@ HRESULT CDecoder::Decode(
         isEncrypted = true;
         if (!getTextPassword)
           return E_NOTIMPL;
+        LOGD("Call here!");
         CMyComBSTR passwordBSTR;
         RINOK(getTextPassword->CryptoGetTextPassword(&passwordBSTR));
         passwordIsDefined = true;

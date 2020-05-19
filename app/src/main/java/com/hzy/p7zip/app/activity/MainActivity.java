@@ -64,18 +64,19 @@ public class MainActivity extends AppCompatActivity
                 //"split_zip_pass1.zip.001";
                 "split_7z_onlydata_pass1.7z.001";
 
-        String pathForTest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+        String pathForTest = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + File.separatorChar+ "TestArchives"
                 + File.separatorChar + fileNameforTest;
         Log.d(TAG, "Check file :" + fileNameforTest);
         String testCommand1 = "7z t '" + pathForTest + "'";
         int resultCode1 = P7ZipApi.executeCommand(testCommand1);
-        String testCommand2 = "7z t '-p2' '" + pathForTest + "'";
+        Log.d(TAG, "Command line : " + testCommand1 + "\nResult : " + resultCode1);
+        /*String testCommand2 = "7z t '-p2' '" + pathForTest + "'";
         int resultCode2 = P7ZipApi.executeCommand(testCommand2);
+        Log.d(TAG, "Command line : " + testCommand2 + "\nResult : " + resultCode2);
         String testCommand3 = "7z t '-p1' '" + pathForTest + "'";
         int resultCode3 = P7ZipApi.executeCommand(testCommand3);
-        Log.d(TAG, "Command line : " + testCommand1 + "\nResult : " + resultCode1);
-        Log.d(TAG, "Command line : " + testCommand2 + "\nResult : " + resultCode2);
-        Log.d(TAG, "Command line : " + testCommand3 + "\nResult : " + resultCode3);
+        Log.d(TAG, "Command line : " + testCommand3 + "\nResult : " + resultCode3);*/
         /* -------------------- end Test File -------------------- */
 
         /*String fileNameForList =
